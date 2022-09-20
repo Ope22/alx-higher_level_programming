@@ -1,40 +1,62 @@
 #!/usr/bin/python3
 """
-Defines a class Rectangle
+nqueens backtracking program to print the coordinates of n queens
+on an nxn grid such that they are all in non-attacking positions
 """
 
 
-class Rectangle:
-    """Representation of a rectangle"""
-    def __init__(self, width=0, height=0):
-        """Initializes the rectangle"""
-        self.height = height
-        self.width = width
+from sys import argv
 
-    @property
-    def width(self):
-        """getter for the private instance attribute width"""
-        return self.__width
+if __name__ == "__main__":
+    a = []
+    if len(argv) != 2:
+        print("Usage: nqueens N")
+        exit(1)
+    if argv[1].isdigit() is False:
+        print("N must be a number")
+        exit(1)
+    n = int(argv[1])
+    if n < 4:
+        print("N must be at least 4")
+        exit(1)
 
-    @width.setter
-    def width(self, value):
-        """setter for the private instance attribute width"""
-        if type(value) is not int:
-            raise TypeError("width must be an integer")
-        if value < 0:
-            raise ValueError("width must be >= 0")
-        self.__width = value
+    # initialize the answer list
+    for i in range(n):
+        a.append([i, None])
 
-    @property
-    def height(self):
-        """getter for the private instance attribute height"""
-        return self.__height
+    def already_exists(y):
+        """check that a queen does not already exist in that y value"""
+        for x in range(n):
+            if y == a[x][1]:
+                return True
+        return False
 
-    @height.setter
-    def height(self, value):
-        """setter for the private instance attribute height"""
-        if type(value) is not int:
-            raise TypeError("height must be an integer")
-        if value < 0:
-            raise ValueError("height must be >= 0")
-        self.__height = value
+    def reject(x, y):
+        """determines whether or not to reject the solution"""
+        if (already_exists(y)):
+            return False
+        i = 0
+        while(i < x):
+            if abs(a[i][1] - y) == abs(i - x):
+                return False
+            i += 1
+        return True
+
+    def clear_a(x):
+        """clears the answers from the point of failure on"""
+        for i in range(x, n):
+            a[i][1] = None
+
+    def nqueens(x):
+        """recursive backtracking function to find the solution"""
+        for y in range(n):
+            clear_a(x)
+            if reject(x, y):
+                a[x][1] = y
+                if (x == n - 1):  # accepts the solution
+                    print(a)
+                else:
+                    nqueens(x + 1)  # moves on to next x value to continue
+
+    # start the recursive process at x = 0
+    nqueens(0)
